@@ -8,6 +8,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//add cors setup
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader() 
+                  .AllowAnyMethod(); 
+        });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -47,6 +59,7 @@ builder.Services.AddAuthentication(options =>
 // add service scope
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<ItemService>();
+builder.Services.AddScoped<TransactionService>();
 
 
 var app = builder.Build();
@@ -59,9 +72,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowFrontend");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+// Use static files middleware to serve files from wwwroot
+app.UseStaticFiles();
 
 app.Run();

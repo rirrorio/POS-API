@@ -14,7 +14,7 @@ namespace POS_API.Controllers
             _loginService = loginService;
         }
 
-        [HttpPost("login")]
+        [HttpPost]
         public IActionResult Login([FromBody] LoginRequestDTO loginRequestDTO)
         {
             try

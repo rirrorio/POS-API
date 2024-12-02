@@ -27,21 +27,31 @@ namespace POS_API.Services
             {
                 return item;
             } else return null;
-        } 
+        }
         // POST Item
         public async Task<string> CreateItemAsync(ItemCreateDTO itemCreateDto)
         {
-            try
-            {
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", itemCreateDto.Image.FileName);
+            try { 
 
+                string imagesDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                if (!Directory.Exists(imagesDirectory))
+                {
+                    Directory.CreateDirectory(imagesDirectory); // Create the directory if it doesn't exist
+                }
+
+                // Generate a unique file name using the GUID
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(itemCreateDto.Image.FileName);
+                string filePath = Path.Combine(imagesDirectory, fileName);
+
+                // Save the image to the disk
                 using (FileStream stream = new FileStream(filePath, FileMode.Create))
                 {
                     await itemCreateDto.Image.CopyToAsync(stream);
                 }
 
-                string imageUrl = "/images/" + itemCreateDto.Image.FileName;
+                string imageUrl = "/images/" + fileName;
 
+                // Create the item in the database
                 Item item = new Item
                 {
                     Name = itemCreateDto.Name,
@@ -55,14 +65,16 @@ namespace POS_API.Services
                 await _dbContext.SaveChangesAsync();
 
                 return $"Item {item.Name} is successfully created";
-
             }
             catch (Exception ex)
             {
+                // Log the error for debugging purposes
+                // Log.Error(ex, "Error creating item");
 
                 return "Service layer error when creating item";
             }
         }
+
 
         //PUT Item
         public async Task<String> UpdateItemAsync (int id, ItemCreateDTO itemCreateDto)
