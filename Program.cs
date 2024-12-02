@@ -46,6 +46,7 @@ builder.Services.AddAuthentication(options =>
 
 // add service scope
 builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<ItemService>();
 
 
 var app = builder.Build();

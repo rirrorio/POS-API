@@ -19,7 +19,7 @@ namespace POS_API.Controllers
         {
             try
             {
-                var loginResponse = _loginService.Authenticate(loginRequestDTO);
+                LoginResponseDTO loginResponse = _loginService.Authenticate(loginRequestDTO);
                 return Ok(loginResponse);
             }
             catch (UnauthorizedAccessException ex)
