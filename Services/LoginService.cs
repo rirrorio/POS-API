@@ -17,7 +17,7 @@ namespace POS_API.Services
             _secretKey = configuration["JwtSettings:SecretKey"];
         }
 
-        public string Authenticate(LoginRequestDTO request)
+        public LoginResponseDTO Authenticate(LoginRequestDTO request)
         {
             // Validate user
             var user = _dbContext.Users.FirstOrDefault(u => u.Username == request.Username && u.Password == request.Password);
@@ -41,7 +41,12 @@ namespace POS_API.Services
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+
+            return new LoginResponseDTO
+            {
+                Username = request.Username,
+                AccessToken = tokenHandler.WriteToken(token)
+            };
         }
     }
 }
